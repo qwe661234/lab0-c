@@ -97,7 +97,23 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
     /* TODO: You need to fix up this code. */
     /* TODO: Remove the above comment when you are about to implement. */
+    if (q == NULL || q->head == NULL) {
+        return false;
+    }
+    list_ele_t *target = q->head;
+    if (sp != NULL) {
+        int slen = strlen(target->value);
+        if (bufsize >= (slen + 1)) {
+            strncpy(sp, target->value, slen);
+            sp[slen] = '\0';
+        } else {
+            strncpy(sp, target->value, bufsize - 1);
+            sp[bufsize - 1] = '\0';
+        }
+    }
     q->head = q->head->next;
+    free(target->value);
+    free(target);
     return true;
 }
 
