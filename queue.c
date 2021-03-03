@@ -71,6 +71,9 @@ bool q_insert_head(queue_t *q, char *s)
     newh->next = q->head;
     q->head = newh;
     q->size++;
+    if (q->size == 1) {
+        q->tail = q->head;
+    }
     return true;
 }
 
@@ -116,6 +119,10 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
         }
     }
     q->head = q->head->next;
+    q->size--;
+    if (q->size == 0) {
+        q->tail = NULL;
+    }
     free(target->value);
     free(target);
     return true;
@@ -144,6 +151,10 @@ void q_reverse(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
+    if (q == NULL || q->size == 1) {
+        return;
+    }
+
 }
 
 /*
@@ -155,4 +166,8 @@ void q_sort(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
+    if (q == NULL || q->size == 1) {
+        return;
+    }
+
 }
