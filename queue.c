@@ -198,11 +198,52 @@ void q_reverse(queue_t *q)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
+list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+{
+    // merge with recursive
+    if (l2 == NULL) {
+        return l1;
+    }
+    if (l1 == NULL) {
+        return l2;
+    }
+    if (strcmp(l1->value, l2->value) <= 0) {
+        l1->next = merge(l1->next, l2);
+        return l1;
+    } else {
+        l2->next = merge(l1, l2->next);
+        return l2;
+    }
+}
+
 void q_sort(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
-    if (q == NULL || q->size == 1) {
+    if (q == NULL || q->head == q->tail) {
         return;
     }
+    list_ele_t *fast = q->head->next;
+    list_ele_t *slow = q->head;
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    fast = slow->next;
+    slow->next = NULL;
+    queue_t q1, q2;
+    q1.head = q->head;
+    q1.tail = slow;
+    q2.head = fast;
+    q2.tail = q->tail;
+    // sort each list
+    q_sort(&q1);
+    q_sort(&q2);
+    // merge sorted l1 and sorted l2
+    q->head = merge(q1.head, q2.head);
+    list_ele_t *ptr = q->head;
+    while (ptr->next != NULL) {
+        ptr = ptr->next;
+    }
+    q->tail = ptr;
 }
