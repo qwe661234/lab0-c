@@ -89,31 +89,32 @@ bool q_insert_tail(queue_t *q, char *s)
     /* TODO: You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
-    list_ele_t *newh;
+    list_ele_t *newt;
     if (q == NULL) {
         return false;
     }
-    newh = malloc(sizeof(list_ele_t));
-    if (newh == NULL) {
+    newt = malloc(sizeof(list_ele_t));
+    if (newt == NULL) {
         return false;
     }
     int slen = strlen(s);
-    newh->value = malloc((slen + 1) * sizeof(char));
-    if (newh->value == NULL) {
-        free(newh);
+    newt->value = malloc((slen + 1) * sizeof(char));
+    if (newt->value == NULL) {
+        free(newt->value);
+        free(newt);
         return false;
     }
-    strncpy(newh->value, s, slen);
-    newh->value[slen] = '\0';
-    if (q->tail != NULL) {
-        q->tail->next = newh;
+    strncpy(newt->value, s, slen);
+    newt->value[slen] = '\0';
+    newt->next = NULL;
+    if (q->size == 0) {
+        q->head = newt;
+        q->tail = newt;
+    } else {
+        q->tail->next = newt;
+        q->tail = newt;
     }
-    newh->next = NULL;
-    q->tail = newh;
     q->size++;
-    if (q->size == 1) {
-        q->head = q->tail;
-    }
     return true;
 }
 
@@ -162,6 +163,9 @@ int q_size(queue_t *q)
     /* TODO: You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
+    if (q == NULL) {
+        return 0;
+    }
     return q->size;
 }
 
@@ -174,7 +178,7 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    if (q == NULL || q->size == 1) {
+    if (q == NULL || q->head == q->tail) {
         return;
     }
     list_ele_t *front, *back, *temp;
