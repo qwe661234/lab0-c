@@ -204,47 +204,64 @@ void q_reverse(queue_t *q)
  */
 list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
 {
-    // merge with recursive
-    if (l2 == NULL) {
-        return l1;
-    }
-    if (l1 == NULL) {
-        return l2;
-    }
+    list_ele_t *newh = l1;
     if (strcmp(l1->value, l2->value) <= 0) {
-        l1->next = merge(l1->next, l2);
-        return l1;
+        l1 = l1->next;
     } else {
-        l2->next = merge(l1, l2->next);
-        return l2;
+        newh = l2;
+        l2 = l2->next;
     }
+    list_ele_t *ptr = newh;
+    while (1) {
+        if (l1 != NULL && l2 != NULL) {
+            if (strcmp(l1->value, l2->value) <= 0) {
+                ptr->next = l1;
+                l1 = l1->next;
+            } else {
+                ptr->next = l2;
+                l2 = l2->next;
+            }
+        } else {
+            if (l2 == NULL) {
+                ptr->next = l1;
+            } else {
+                ptr->next = l2;
+            }
+            break;
+        }
+        ptr = ptr->next;
+    }
+    return newh;
 }
-
-void q_sort(queue_t *q)
+list_ele_t *mergeSortList(list_ele_t *head)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
-    if (q == NULL || q->head == q->tail) {
-        return;
+    // merge sort
+    if (head == NULL || head->next == NULL) {
+        return head;
     }
-    list_ele_t *fast = q->head->next;
-    list_ele_t *slow = q->head;
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+    // split list
     while (fast != NULL && fast->next != NULL) {
         slow = slow->next;
         fast = fast->next->next;
     }
     fast = slow->next;
     slow->next = NULL;
-    queue_t q1, q2;
-    q1.head = q->head;
-    q1.tail = slow;
-    q2.head = fast;
-    q2.tail = q->tail;
+
     // sort each list
-    q_sort(&q1);
-    q_sort(&q2);
+    list_ele_t *l1 = mergeSortList(head);
+    list_ele_t *l2 = mergeSortList(fast);
+
     // merge sorted l1 and sorted l2
-    q->head = merge(q1.head, q2.head);
+    return merge(l1, l2);
+}
+void q_sort(queue_t *q)
+{
+    if (q == NULL || q->head == q->tail) {
+        return;
+    }
+    q->head = mergeSortList(q->head);
     list_ele_t *ptr = q->head;
     while (ptr->next != NULL) {
         ptr = ptr->next;
